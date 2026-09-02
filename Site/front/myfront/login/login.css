@@ -1,0 +1,185 @@
+.veen {
+	border-radius: 10px;
+	width: 70%;
+	margin: 100px auto;
+	background: rgba(0, 0, 0, 0.651);
+	min-height: 400px;
+	display: table;
+	position: relative;
+	box-shadow: 0 0 4px rgba(0, 0, 0, 0.808), 0 4px 8px rgba(0, 0, 0, .28);
+}
+
+.veen>div {
+	border-radius: 10px;
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+	color: #ffffff;
+}
+
+.veen button {
+	background: #000000;
+	padding: 10px 30px;
+	border: 3px solid #ffffff;
+	border-radius: 50px;
+	background-clip: padding-box;
+	position: relative;
+	color: #ffffff;
+	box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28);
+	transition: all 0.2s ease-in-out;
+}
+
+.veen button:hover {
+	border: 3px solid #000000;
+	color: rgb(0, 0, 0);
+	background-color: #ffffff;
+	transform: scale(1.1);
+}
+
+
+.veen button:active {
+	transform: scale(1.0);
+}
+
+.veen .splits p {
+	font-size: 18px;
+}
+
+.veen>.wrapper {
+	position: absolute;
+	width: 40%;
+	height: 120%;
+	top: -10%;
+	left: 5%;
+	background: #000000;
+	box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28);
+	transition: all .5s;
+	color: #ffffff;
+	overflow: hidden;
+}
+
+.veen .wrapper>form {
+	padding: 15px 30px 30px;
+	width: 100%;
+	transition: all .55s;
+	background: #000000;
+	width: 100%;
+}
+
+.veen .wrapper>form:focus {
+	outline: none;
+}
+
+.veen .wrapper #login {
+	padding-top: 20%;
+	visibility: visible;
+}
+
+.veen .wrapper #register {
+	transform: translateY(-80%) translateX(100%);
+	visibility: hidden;
+}
+
+.veen .wrapper.move #register {
+	transform: translateY(-80%) translateX(0%);
+	visibility: visible;
+}
+
+.veen .wrapper.move #login {
+	transform: translateX(-100%);
+
+}
+
+.veen .wrapper>form>div {
+	position: relative;
+	margin-bottom: 15px;
+}
+
+.veen .wrapper label {
+	position: absolute;
+	top: -9px;
+	font-size: 12px;
+	white-space: nowrap;
+	background: #ffffff;
+	text-align: left;
+	left: 9px;
+	padding: 0 5px;
+	color: #000000;
+	pointer-events: none;
+}
+
+.veen .wrapper input {
+	height: 40px;
+	padding: 5px 15px;
+	width: 100%;
+	border: solid 1px #6d6d6d;
+}
+
+.veen .wrapper input {
+	background-color: #000000;
+	color: white;
+	height: 40px;
+	padding: 5px 15px;
+	width: 100%;
+	border: solid 1px rgb(255, 255, 255);
+}
+
+.veen .wrapper input:focus {
+	outline: none;
+	background-color: #000000;
+	border-color: #ffffff;
+}
+
+.veen>.wrapper.move {
+	left: 45%;
+}
+
+.veen>.wrapper.move input:focus {
+	border-color: #ffffff;
+}
+
+
+.veen .button {
+	background: #000000;
+	padding: 10px 30px;
+	border: 3px solid #ffffff;
+	border-radius: 50px;
+	background-clip: padding-box;
+	position: relative;
+	color: #ffffff;
+	transition: all 0.2s ease-in-out;
+}
+
+.veen .button:hover {
+	border: 3px solid #000000;
+	color: black;
+	background-color: #ffffff;
+}
+
+.veen .button:active {
+	color: #ffffff;
+	background-color: #000000;
+}
+
+.alerts{
+	background-color: rgb(245, 245, 245);
+	position:absolute;
+	top: 1%;
+	left: 75%;
+	border-radius: 5%;
+	
+	p{
+		text-align:justify;
+		padding: 3px 3px;
+	}
+	.false{
+		margin: 2px 2px 2px;
+		font-weight: bold;
+		color: rgb(180, 0, 0);
+	}
+	.true{
+		margin: 2px 2px 2px;
+		font-weight: bold;
+		color: rgb(31, 0, 145);
+	}
+}
