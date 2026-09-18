@@ -1,0 +1,3 @@
+# Bibliotecas de terceiros versionadas junto do projeto nao contam como codigo meu
+Site/front/.bootstrap/** linguist-vendored
+Site/front/externo/** linguist-vendored
