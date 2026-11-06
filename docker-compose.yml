@@ -1,0 +1,33 @@
+# Sobe o site em http://localhost:8000 com o banco já importado:
+#   docker compose up -d
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/php.Dockerfile
+    ports:
+      - "8000:80"
+    volumes:
+      - ./Site:/var/www/html
+    environment:
+      DB_HOST: db
+      DB_USER: rsmercearia
+      DB_PASSWORD: rsmercearia
+      DB_NAME: Rsmercearia
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mariadb:10.11
+    environment:
+      MARIADB_DATABASE: Rsmercearia
+      MARIADB_USER: rsmercearia
+      MARIADB_PASSWORD: rsmercearia
+      MARIADB_RANDOM_ROOT_PASSWORD: "1"
+    volumes:
+      - ./Site/backend/sql/Rsmercearia.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      retries: 20

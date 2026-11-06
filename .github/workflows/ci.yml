@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  testes:
+    name: Sintaxe PHP e testes de segurança
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sintaxe de todos os arquivos PHP
+        run: find Site -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: Sobe o site e o banco
+        run: docker compose up -d --build --wait
+      - name: Testes de login e páginas protegidas
+        run: bash tests/seguranca.sh
+      - name: Logs em caso de falha
+        if: failure()
+        run: docker compose logs
+      - if: always()
+        run: docker compose down -v

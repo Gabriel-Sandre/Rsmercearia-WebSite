@@ -1,3 +1,6 @@
 # Bibliotecas de terceiros versionadas junto do projeto nao contam como codigo meu
 Site/front/.bootstrap/** linguist-vendored
 Site/front/externo/** linguist-vendored
+
+# Scripts de shell precisam de LF para rodar no Linux
+*.sh text eol=lf
