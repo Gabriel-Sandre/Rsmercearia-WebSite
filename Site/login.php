@@ -2,6 +2,77 @@
 session_start();
 if (isset($_SESSION["user"])) {
 	header("Location: index.php");
+	exit;
+}
+
+// O formulário é processado antes de qualquer HTML: assim o redirecionamento
+// do login funciona mesmo sem output buffering (ex.: `php -S`).
+$messages = array(); // cada item: [classe css, texto]
+
+if (isset($_POST["register"])) {
+	$fullname = trim($_POST["fullname_reg"] ?? "");
+	$email = trim($_POST["email_reg"] ?? "");
+	$tell = trim($_POST["tell_reg"] ?? "");
+	$password = $_POST["password_reg"] ?? "";
+	$errors = array();
+	if ($fullname === "" or $email === "" or $tell === "" or $password === "") {
+		array_push($errors, "Todos campos precisam estar preenchidos");
+	}
+	if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+		array_push($errors, "Email não é valido");
+	}
+	if (strlen($password) < 8) {
+		array_push($errors, "A senha precisa ter 8 caracteres ou mais");
+	}
+	if (count($errors) === 0) {
+		require_once "backend/conexao.php";
+		// Consulta parametrizada: o e-mail nunca é concatenado no SQL.
+		$stmt = mysqli_prepare($conn, "SELECT id_user FROM Users WHERE email = ?");
+		mysqli_stmt_bind_param($stmt, "s", $email);
+		mysqli_stmt_execute($stmt);
+		mysqli_stmt_store_result($stmt);
+		if (mysqli_stmt_num_rows($stmt) > 0) {
+			array_push($errors, "Esté email já está registrado");
+		}
+		mysqli_stmt_close($stmt);
+	}
+	if (count($errors) > 0) {
+		foreach ($errors as $error) {
+			$messages[] = array("false", "-" . $error);
+		}
+	} else {
+		$passwordhash = password_hash($password, PASSWORD_DEFAULT);
+		$stmt = mysqli_prepare($conn, "INSERT INTO Users (fullname, email, tell, password) VALUES (?, ?, ?, ?)");
+		if ($stmt) {
+			mysqli_stmt_bind_param($stmt, "ssss", $fullname, $email, $tell, $passwordhash);
+			mysqli_stmt_execute($stmt);
+			$messages[] = array("true", "-Registrado com sucesso");
+		} else {
+			$messages[] = array("false", "-Alguma coisa está muito errada..");
+		}
+	}
+}
+
+if (isset($_POST["login"])) {
+	$email = trim($_POST["email_log"] ?? "");
+	$password = $_POST["password_log"] ?? "";
+	require_once "backend/conexao.php";
+	$stmt = mysqli_prepare($conn, "SELECT fullname, email, password FROM Users WHERE email = ?");
+	mysqli_stmt_bind_param($stmt, "s", $email);
+	mysqli_stmt_execute($stmt);
+	$user = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+	mysqli_stmt_close($stmt);
+	// A sessão só recebe dados depois que a senha confere.
+	if ($user && password_verify($password, $user["password"])) {
+		session_regenerate_id(true); // evita fixação de sessão
+		$_SESSION["user"] = "yes";
+		$_SESSION["name"] = $user["fullname"];
+		$_SESSION["email"] = $user["email"];
+		header("Location: index.php");
+		exit;
+	}
+	// Mesma mensagem para e-mail e senha: não revela quais e-mails existem.
+	$messages[] = array("false", "-E-mail ou senha inválidos");
 }
 ?>
 <html>
@@ -37,73 +108,9 @@ if (isset($_SESSION["user"])) {
 	justify-content: center;
 	background-repeat: round;">
 		<div class="alerts">
-			<?php
-			if (isset($_POST["register"])) {
-				$fullname = $_POST["fullname_reg"];
-				$email = $_POST["email_reg"];
-				$tell = $_POST["tell_reg"];
-				$password = $_POST["password_reg"];
-				$passwordhash = password_hash($password, PASSWORD_DEFAULT);
-				$errors = array();
-				if (empty($fullname) or empty($email) or empty($tell) or empty($password)) {
-					array_push($errors, "Todos campos precisam estar preenchidos");
-				}
-				if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-					array_push($errors, "Email não é valido");
-				}
-				if (strlen($password) < 8) {
-					array_push($errors, "A senha precisa ter 8 caracteres ou mais");
-				}
-				require_once "backend/conexao.php";
-				$sql = "SELECT * FROM Users WHERE email = '$email'";
-				$result = mysqli_query($conn, $sql);
-				$rowCount = mysqli_num_rows($result);
-				if ($rowCount > 0) {
-					array_push($errors, "Esté email já está registrado");
-				}
-				if (count($errors) > 0) {
-					foreach ($errors as $error) {
-						echo "<p class='false'>-$error</p>";
-					}
-				} else {
-					$sql = "INSERT INTO Users (fullname, email , tell , password) VALUES ( ?, ?, ?, ? )";
-					$stmt = mysqli_stmt_init($conn);
-					$prepareStmt = mysqli_stmt_prepare($stmt, $sql);
-					if ($prepareStmt) {
-						mysqli_stmt_bind_param($stmt, "ssss", $fullname, $email, $tell, $passwordhash);
-						mysqli_stmt_execute($stmt);
-						echo "<div class='true'>-Registrado com sucesso</div>";
-					} else {
-						echo "<div class='false'>-Alguma coisa está muito errada..</div>";
-						die();
-					}
-				}
-			}
-			?>
-			<?php
-			if (isset($_POST["login"])) {
-				$email = $_POST["email_log"];
-				$password = $_POST["password_log"];
-				require_once "backend/conexao.php";
-				$sql = "SELECT * FROM Users WHERE email = '$email'";
-				$result = mysqli_query($conn, $sql);
-				$user = mysqli_fetch_array($result, MYSQLI_ASSOC);
-				$_SESSION["name"] = $user["fullname"];
-				$_SESSION["email"] = $email;
-				if ($user) {
-					if (password_verify($password, $user["password"])) {
-						session_start();
-						$_SESSION["user"] = "yes";
-						header("Location: index.php");
-						die();
-					} else {
-						echo "<div class='false'>-Senha invalido</div>";
-					}
-				} else {
-					echo "<div class='false'>-Email invalido</div>";
-				}
-			}
-			?>
+			<?php foreach ($messages as $message) { ?>
+				<div class="<?php echo $message[0]; ?>"><?php echo htmlspecialchars($message[1], ENT_QUOTES, "UTF-8"); ?></div>
+			<?php } ?>
 		</div>
 
 		<div class="veen">

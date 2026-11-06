@@ -1,9 +1,9 @@
-
 <?php
 session_start();
 
-if ($_SESSION["email"]!="admin@gmail.com"){
-    header("location:index.php");
+if (($_SESSION["email"] ?? "") !== "admin@gmail.com") {
+    header("Location: index.php");
+    exit;
 }
 ?>
 
@@ -56,7 +56,7 @@ if ($_SESSION["email"]!="admin@gmail.com"){
 				</li>
 				<li class="nav-item dropdown user">
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						<img src="front/img/user.ico" width="25" height="25" alt="Categorias"> <?php echo $_SESSION["name"]; ?></a>
+						<img src="front/img/user.ico" width="25" height="25" alt="Categorias"> <?php echo htmlspecialchars($_SESSION["name"] ?? "", ENT_QUOTES, "UTF-8"); ?></a>
 					<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
 						<a class="dropdown-item" href="logout.php">Sair da conta</a>
 					</div>
@@ -65,7 +65,7 @@ if ($_SESSION["email"]!="admin@gmail.com"){
 					<a class="nav-link" href="sobre.php"><img src="front/img/sobre.ico" width="20" height="20" alt="Categorias"> Sobre</a>
 				</li>
 				<?php
-				if ($_SESSION["email"]=="admin@gmail.com"){
+				if (($_SESSION["email"] ?? "") === "admin@gmail.com"){
 					echo '<li class="nav-item">
 					<a class="nav-link" href="administração.php"><img src="front/img/admin.ico" width="20" height="20" alt="Administração"> Administração</a>
 				</li>';
